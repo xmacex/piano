@@ -93,4 +93,6 @@ keys.forEach(function(k) {
     addKey(k, document.getElementById('content'));
 });
 
+// Set up the dynamic selector and set it to the default value
 addDynamicSelector(dynamics, document.getElementById('content'));
+document.querySelector('input#' + dynamic).checked = true;
