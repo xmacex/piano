@@ -7,6 +7,8 @@
 
 // A test setup
 const keys = ['B6', 'C1', 'D2', 'Db4', 'E6', 'F1'];
+const dynamics = ['pp', 'mf', 'ff'];
+var dynamic = 'mf';
 var keyMap = {
     'B6': {
 	'audio': undefined
@@ -28,11 +30,10 @@ var keyMap = {
     }
 };
 
-
 // Play a note
-function playNote(note) {
-    console.log("Playing note " + note);
-    var noteUrl = 'http://localhost:8080/ff/' + note + '.mp3';
+function playNote(note, dynamic) {
+    console.log("Playing note " + note + ', ' + dynamic);
+    var noteUrl = 'http://localhost:8080/' + dynamic + '/' + note + '.mp3';
     console.log("loading " + noteUrl);
     var noteSound = new Audio(noteUrl);
     keyMap[note].audio = noteSound;
@@ -56,7 +57,7 @@ function addKey(key, parentElem) {
     keyElem.id = key;
     keyElem.innerText = '🎹' + key;
     keyElem.addEventListener('mousedown', function() {
-	playNote(this.id);
+	playNote(this.id, dynamic);
     });
     keyElem.addEventListener('mouseup', function() {
 	stopNote(this.id);
@@ -65,7 +66,31 @@ function addKey(key, parentElem) {
     parentElem.append(keyElem);
 }
 
+function addDynamicSelector(dynamics, parentElem) {
+    selElem = document.createElement('div');
+    dynamics.forEach(function(dyn) {
+	dynElem = document.createElement('input');
+	dynElem.id = dyn;
+	dynElem.type = 'radio';
+	dynElem.name = 'dynamic';
+	dynElem.value = dyn;
+	dynElem.onclick = function() {
+	    dynamic = dyn;
+	};
+
+	labelElem = document.createElement('label');
+	labelElem.for = dyn;
+	labelElem.innerText = dyn;
+
+	parentElem.append(dynElem);
+	parentElem.append(labelElem);
+    });
+    parentElem.append(selElem);
+}
+
 // Set up the piano
 keys.forEach(function(k) {
     addKey(k, document.getElementById('content'));
 });
+
+addDynamicSelector(dynamics, document.getElementById('content'));
