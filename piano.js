@@ -33,7 +33,7 @@ var keyMap = {
 // Play a note
 function playNote(note, dynamic) {
     console.log("Playing note " + note + ', ' + dynamic);
-    var noteUrl = 'http://localhost:8080/' + dynamic + '/' + note + '.mp3';
+    var noteUrl = '' + dynamic + '/' + note + '.mp3';
     console.log("loading " + noteUrl);
     var noteSound = new Audio(noteUrl);
     keyMap[note].audio = noteSound;
