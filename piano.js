@@ -5,7 +5,7 @@
   Mace Ojala
 */
 
-const soundApi = 'http://localhost:8080/';
+const soundApi = '';
 var dynamics = [];
 var dynamic = undefined; // selected dynamic
 var keyMap = {};
@@ -17,7 +17,7 @@ function playNote(note, dynamic) {
     var audio = audioSprites[dynamic];
     audio.dataset.note = note;
     audio.dataset.dynamic = dynamic;
-    audio.currentTime = playtime[dynamic][note].begin;
+    audio.currentTime = playtime[dynamic].sprites[note].begin;
     audio.play();
 
     audio.addEventListener('timeupdate', decayNote);
@@ -28,11 +28,11 @@ function decayNote() {
     // In this context, "this" is any of the three audio sprites
     console.log(this.currentTime, this.dataset.dynamic, "🎶",
 		this.dataset.note, "⏱ ",
-		playtime[this.dataset.dynamic][this.dataset.note].end);
-    if(this.currentTime > playtime[this.dataset.dynamic][this.dataset.note].end - 1) {
+		playtime[this.dataset.dynamic].sprites[this.dataset.note].end);
+    if(this.currentTime > playtime[this.dataset.dynamic].sprites[this.dataset.note].end - 1) {
 	console.log(this.currentTime, this.dataset.dynamic, "🔇",
 		    this.dataset.note, "because", this.currentTime, ">",
-		    playtime[this.dataset.dynamic][this.dataset.note].end);
+		    playtime[this.dataset.dynamic].sprites[this.dataset.note].end);
 	this.pause();
 	removeEventListener('click', decayNote);
     };
@@ -107,7 +107,7 @@ fetch('playtimes-as.json')
 	});
 
 	// Build the piano UI
-	addPianoKeys(Object.keys(playtime[dynamic]), document.getElementById('content'));
+	addPianoKeys(Object.keys(playtime[dynamic].sprites), document.getElementById('content'));
 
 	// Build the dynamic selector UI and set it to the default value
 	addDynamicSelector(Object.keys(playtime), document.getElementById('content'));
