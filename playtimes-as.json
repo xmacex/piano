@@ -1,6 +1,6 @@
 {
     "pp": {
-	"filename": "pp.mp3",
+	"filename": "pp/pp.mp3",
 	"sprites": {
 	    "A1": {
 		"begin": 0,
@@ -440,7 +440,7 @@
 	}
     },
     "mf": {
-	"filename": "mf.mp3",
+	"filename": "mf/mf.mp3",
 	"sprites": {
 	    "A1": {
 		"begin": 0,
@@ -870,7 +870,7 @@
 	}
     },
     "ff": {
-	"filename": "ff.mp3",
+	"filename": "ff/ff.mp3",
 	"sprites": {
 	    "A0": {
 		"begin": 0,
