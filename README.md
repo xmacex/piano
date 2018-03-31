@@ -15,7 +15,7 @@ Instantiate a new Piano by first sourcing the `piano.js` file, e.g. in HTML
 And then from Javascript you can instantiate and initialize the piano
 
 ```javascript
-p = new piano();
+p = new Piano();
 p.init();
 ```
 
