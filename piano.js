@@ -1,6 +1,5 @@
 /*
-  Stuff cannibalized from Tim's piano at
-  https://codepen.io/timwray87/pen/dmYwjw
+  An Audio Sprite idea. Maybe works.
 
   Mace Ojala
 */
