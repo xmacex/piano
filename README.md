@@ -4,6 +4,29 @@ A piano thing for Frameworks and Architecture for the Web course at ITU, using t
 
 The piano samples are from University of Iowa's [Electronic Music Studios](http://theremin.music.uiowa.edu/MISpiano.html), and were trimmed and transcoded to MP3 with [ffmpeg](https://www.ffmpeg.org). Thank you.
 
+## API
+
+Instantiate a new Piano by first sourcing the `piano.js` file, e.g. in HTML
+
+```html
+<script src="piano.js"></script>
+```
+
+And then from Javascript you can instantiate and initialize the piano
+
+```javascript
+p = new piano();
+p.init();
+```
+
+The constructor accepts one parameter, which is an URL to a JSON structure, which for each dynamic defines a filename for the concatenated samples, and a dict of notes and begin and endtimes for the sprites.
+
+Then play the piano by giving a dynamic and a note. Note that these must match exactly the 
+
+```javascript
+p.playNote('mf', 'D4');
+```
+
 ## Audio sample preparation
 
 After downloading the samples with a bit of Python automation, the following steps were performed. I'm writing these after the fact, based on notes and my shell history, so please don't assume the workflow to be complete, though the commands are more or less what I did. I'm providing these so that you can see the steps, commands and parameter I used.

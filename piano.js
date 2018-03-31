@@ -5,111 +5,133 @@
   Mace Ojala
 */
 
-const soundApi = '';
-var dynamics = [];
-var dynamic = undefined; // selected dynamic
-var keyMap = {};
-var audioSprites = {};
+function Piano(soundData) {
+    // Initialize some instance properties
+    this.soundData = soundData || 'playtimes-as.json';
 
-// Play a note
-function playNote(note, dynamic) {
-    console.log("Playing note " + note + ', ' + dynamic);
-    var audio = audioSprites[dynamic];
-    audio.dataset.note = note;
-    audio.dataset.dynamic = dynamic;
-    audio.currentTime = playtime[dynamic].sprites[note].begin;
-    audio.play();
+    this.playtime = undefined;
+    this.dynamics = undefined;
+    this.keyMap = {};
+    this.audioSprites = {};
 
-    audio.addEventListener('timeupdate', decayNote);
-}
+    // Play a note
+    this.playNote = function(dynamic, note) {
+	console.log("Playing note " + note + ', ' + dynamic);
+	var audio = this.audioSprites[dynamic];
+	// Using the HTML element (w. dataset) to transfer data :-P
+	// This is inconsistent, since also the Piano object exists
+	// and holds this data. But not invoking, but passing the
+	// event listener with arguments would need some syntactic
+	// trickery. Conceptually, using the event would also makes
+	// sense for the decay.
+	audio.dataset.note = note;
+	audio.dataset.dynamic = dynamic;
+	audio.dataset.end = this.playtime[dynamic].sprites[note].end;
 
-// Decay a note
-function decayNote() {
-    // In this context, "this" is any of the three audio sprites
-    console.log(this.currentTime, this.dataset.dynamic, "🎶",
-		this.dataset.note, "⏱ ",
-		playtime[this.dataset.dynamic].sprites[this.dataset.note].end);
-    if(this.currentTime > playtime[this.dataset.dynamic].sprites[this.dataset.note].end - 1) {
-	console.log(this.currentTime, this.dataset.dynamic, "🔇",
-		    this.dataset.note, "because", this.currentTime, ">",
-		    playtime[this.dataset.dynamic].sprites[this.dataset.note].end);
-	this.pause();
-	removeEventListener('click', decayNote);
-    };
-}
+	audio.currentTime = this.playtime[dynamic].sprites[note].begin;
+	audio.play();
 
-// Construct a piano key
-function addKey(key, parentElem) {
-    keyElem = document.createElement('button');
-    keyElem.id = key;
-    keyElem.innerText = '🎹' + key;
-    keyElem.addEventListener('mousedown', function() {
-	playNote(this.id, dynamic);
-    });
-    
-    parentElem.append(keyElem);
-}
+	audio.addEventListener('timeupdate', this.decayNote);
+    }
 
-// Construct a whole piano
-function addPianoKeys(pianoKeys, parentElem) {
-    pianoElem = document.createElement('div');
-    pianoElem.id = 'piano';
-    pianoKeys.forEach(function(key) {
-	addKey(key, pianoElem);
-    });
-
-    parentElem.append(pianoElem);
-}
-
-// Construct dynamic selector
-function addDynamicSelector(dynamics, parentElem) {
-    selElem = document.createElement('div');
-    selElem.id = 'dynamic-selector';
-    dynamics.forEach(function(dyn) {
-	dynElem = document.createElement('input');
-	dynElem.id = dyn;
-	dynElem.type = 'radio';
-	dynElem.name = 'dynamic';
-	dynElem.value = dyn;
-	dynElem.onclick = function() {
-	    dynamic = dyn;
+    // decay a note
+    this.decayNote = function() {
+	// in this context, "this" is any of the three audio sprites
+	var audio = this;
+	console.log(audio.currentTime, audio.dataset.dynamic, "🎶",
+		    audio.dataset.note, "⏱ ",
+		    audio.dataset.end);
+	if(audio.currentTime > audio.dataset.end - 1) {
+	    console.log(audio.currentTime, audio.dataset.dynamic, "🔇",
+			audio.dataset.note, "because", audio.currentTime, ">",
+			audio.dataset.end - 1);
+	    audio.pause();
+	    removeEventListener('timeupdate', this.decayNote);
 	};
+    }
 
-	labelElem = document.createElement('label');
-	labelElem.for = dyn;
-	labelElem.innerText = dyn;
+    // Construct a piano key
+    this.addKey = function(piano, key, parentElem) {
+	keyElem = document.createElement('button');
+	keyElem.id = key;
+	keyElem.innerText = '🎹' + key;
+	keyElem.addEventListener('mousedown', function() {
+	    piano.playNote(piano.dynamic, this.id);
+	});
 
-	selElem.append(dynElem);
-	selElem.append(labelElem);
-    });
-    parentElem.append(selElem);
+	parentElem.append(keyElem);
+    }
+
+    // Construct a whole piano
+    this.addPianoKeys = function(piano, pianoKeys, parentElem) {
+	this.addPianoKeys.bind(piano);
+	pianoElem = document.createElement('div');
+	pianoElem.id = 'piano';
+	pianoKeys.forEach(function(key) {
+	    piano.addKey(piano, key, pianoElem);
+	});
+
+	parentElem.append(pianoElem);
+    }
+
+    // Construct dynamic selector
+    this.addDynamicSelector = function(dynamics, parentElem) {
+	selElem = document.createElement('div');
+	selElem.id = 'dynamic-selector';
+	dynamics.forEach(function(dyn) {
+	    dynElem = document.createElement('input');
+	    dynElem.id = dyn;
+	    dynElem.type = 'radio';
+	    dynElem.name = 'dynamic';
+	    dynElem.value = dyn;
+	    dynElem.onclick = function() {
+		dynamic = dyn;
+	    };
+
+	    labelElem = document.createElement('label');
+	    labelElem.for = dyn;
+	    labelElem.innerText = dyn;
+
+	    selElem.append(dynElem);
+	    selElem.append(labelElem);
+	});
+	parentElem.append(selElem);
+    }
+
+    // Fetch playtime data and construct the UI
+    this.init = function(parentElem) {
+	// Javascript 'that' idiom to keep track of changing
+	// contexts. Here, 'that' will be the piano object, as inside
+	// fetch 'this' will be the window
+	var that = this;
+	// var playtime = undefined;
+	fetch(this.soundData)
+	    .then(res => res.json())
+	    .catch(err => console.log(err))
+	    .then(function(data) {
+		that.playtime = data;
+
+		// Set up the audio sprites
+		console.log("In this fetch.then this is ", this);
+		console.log("In this fetch.then that is ", that);
+		Object.keys(data).forEach(function(dynamic) {
+		    that.audioSprites[dynamic] = new Audio(data[dynamic].filename);
+		});
+
+		// Set up the default dynamic
+		that.dynamic = Object.keys(data)[0];
+
+		// Set up the keyMap
+		Object.keys(data[that.dynamic]).forEach(function(key) {
+		    that.keyMap[key] = {'audio': undefined}
+		});
+
+		// Build the piano UI
+		that.addPianoKeys(that, Object.keys(data[that.dynamic].sprites), document.getElementById('content'));
+
+		// Build the dynamic selector UI and set it to the default value
+		that.addDynamicSelector(Object.keys(data), document.getElementById('content'));
+		document.querySelector('input#' + that.dynamic).checked = true;
+	    });
+    }
 }
-
-// Fetch playtime data and construct the UI
-var playtime = undefined;
-fetch('playtimes-as.json')
-    .then(res => res.json())
-    .catch(err => console.log(err))
-    .then(function(data) {
-	playtime = data;
-
-	// Set up the audio sprites
-	Object.keys(playtime).forEach(function(dynamic) {
-	    audioSprites[dynamic] = new Audio(soundApi + playtime[dynamic].filename);
-	});
-
-	// Set up the default dynamic
-	dynamic = Object.keys(playtime)[0];
-
-	// Set up the keyMap
-	Object.keys(playtime[dynamic]).forEach(function(key) {
-	    keyMap[key] = {'audio': undefined}
-	});
-
-	// Build the piano UI
-	addPianoKeys(Object.keys(playtime[dynamic].sprites), document.getElementById('content'));
-
-	// Build the dynamic selector UI and set it to the default value
-	addDynamicSelector(Object.keys(playtime), document.getElementById('content'));
-	document.querySelector('input#' + dynamic).checked = true;
-    });
