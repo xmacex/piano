@@ -21,7 +21,7 @@ p.init();
 
 The constructor accepts one parameter, which is an URL to a JSON structure, which for each dynamic defines a filename for the concatenated samples, and a dict of notes and begin and endtimes for the sprites.
 
-Then play the piano by giving a dynamic and a note. Note that these must match exactly the 
+Then play the piano by giving a dynamic and a note. Note that these must match exactly the playtime structure.
 
 ```javascript
 p.playNote('mf', 'D4');
