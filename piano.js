@@ -59,24 +59,27 @@ function Piano(soundData) {
     }
 
     // Construct a piano key
-    this.addKey = function(piano, key, parentElem) {
+    this.addKey = function(key, parentElem) {
+	// Ok having these that = this idioms trickling this far down
+	// is getting old... re-architecturing would be welcome
+	var that = this;
 	keyElem = document.createElement('button');
 	keyElem.id = key;
 	keyElem.innerText = '🎹' + key;
 	keyElem.addEventListener('mousedown', function() {
-	    piano.playNote(piano.dynamic, this.id);
+	    that.playNote(that.dynamic, this.id);
 	});
 
 	parentElem.append(keyElem);
     }
 
     // Construct a whole piano
-    this.addPianoKeys = function(piano, pianoKeys, parentElem) {
-	this.addPianoKeys.bind(piano);
+    this.addPianoKeys = function(pianoKeys, parentElem) {
+	var that = this;
 	pianoElem = document.createElement('div');
 	pianoElem.id = 'piano';
 	pianoKeys.forEach(function(key) {
-	    piano.addKey(piano, key, pianoElem);
+	    that.addKey(key, parentElem);
 	});
 
 	parentElem.append(pianoElem);
@@ -106,8 +109,20 @@ function Piano(soundData) {
 	parentElem.append(selElem);
     }
 
+    // Build a test UI
+    this.buildTestUI = function(selector) {
+	// Build the piano UI
+	console.log("Building demo ui, this is", this);
+	var parentElem = document.querySelector(selector);
+	this.addPianoKeys(Object.keys(this.playtime[this.dynamic].sprites), parentElem);
+
+	// Build the dynamic selector UI and set it to the default value
+	this.addDynamicSelector(Object.keys(this.playtime), parentElem);
+	document.querySelector('input#' + this.dynamic).checked = true;
+    }
+
     // Fetch playtime data and construct the UI
-    this.init = function(parentElem) {
+    this.init = function(demoselector) {
 	// Javascript 'that' idiom to keep track of changing
 	// contexts. Here, 'that' will be the piano object, as inside
 	// fetch 'this' will be the window
@@ -120,8 +135,6 @@ function Piano(soundData) {
 		that.playtime = data;
 
 		// Set up the audio sprites
-		console.log("In this fetch.then this is ", this);
-		console.log("In this fetch.then that is ", that);
 		Object.keys(data).forEach(function(dynamic) {
 		    that.audioSprites[dynamic] = new Audio(data[dynamic].filename);
 		});
@@ -134,12 +147,10 @@ function Piano(soundData) {
 		    that.keyMap[key] = {'audio': undefined}
 		});
 
-		// Build the piano UI
-		that.addPianoKeys(that, Object.keys(data[that.dynamic].sprites), document.getElementById('content'));
-
-		// Build the dynamic selector UI and set it to the default value
-		that.addDynamicSelector(Object.keys(data), document.getElementById('content'));
-		document.querySelector('input#' + that.dynamic).checked = true;
+		// User has requested the demo UI to be built
+		if (demoselector) {
+		    that.buildTestUI(demoselector);
+		}
 	    });
     }
 }
