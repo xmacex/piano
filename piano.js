@@ -16,7 +16,7 @@ function Piano(soundData) {
 
     // Play a note
     this.playNote = function(dynamic, note) {
-	console.log("Playing note " + note + ', ' + dynamic);
+	console.log("Playing note", dynamic, note);
 	var audio = this.audioSprites[dynamic];
 	// Using the HTML element (w. dataset) to transfer data :-P
 	// This is inconsistent, since also the Piano object exists
@@ -24,14 +24,22 @@ function Piano(soundData) {
 	// event listener with arguments would need some syntactic
 	// trickery. Conceptually, using the event would also makes
 	// sense for the decay.
-	audio.dataset.note = note;
-	audio.dataset.dynamic = dynamic;
-	audio.dataset.end = this.playtime[dynamic].sprites[note].end;
+	try {
+	    audio.dataset.note = note;
+	    audio.dataset.dynamic = dynamic;
+	    audio.dataset.end = this.playtime[dynamic].sprites[note].end;
 
-	audio.currentTime = this.playtime[dynamic].sprites[note].begin;
-	audio.play();
-
-	audio.addEventListener('timeupdate', this.decayNote);
+	    audio.currentTime = this.playtime[dynamic].sprites[note].begin;
+	    audio.play();
+	    audio.addEventListener('timeupdate', this.decayNote);
+	} catch (e) {
+	    console.error(e, "Failed to play", dynamic, note);
+	    if (!(dynamic in this.playtime)) {
+		console.error(dynamic, 'not in', this.playtime);
+	    } else if (!(note in this.playtime[dynamic])) {
+		console.error(note, 'not found in', this.playtime[dynamic]);
+	    }
+	}
     }
 
     // decay a note
