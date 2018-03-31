@@ -41,7 +41,12 @@ function Piano(soundData) {
 	}
     }
 
-    // decay a note
+    // Stop a note
+    this.stopNote = function(dynamic) {
+	this.audioSprites[dynamic].pause();
+    }
+
+    // Decay a note
     this.decayNote = function() {
 	// in this context, "this" is any of the three audio sprites
 	var audio = this;
@@ -86,6 +91,7 @@ function Piano(soundData) {
 
     // Construct dynamic selector
     this.addDynamicSelector = function(dynamics, parentElem) {
+	var that = this;
 	selElem = document.createElement('div');
 	selElem.id = 'dynamic-selector';
 	dynamics.forEach(function(dyn) {
@@ -95,7 +101,7 @@ function Piano(soundData) {
 	    dynElem.name = 'dynamic';
 	    dynElem.value = dyn;
 	    dynElem.onclick = function() {
-		dynamic = dyn;
+		that.dynamic = dyn;
 	    };
 
 	    labelElem = document.createElement('label');
