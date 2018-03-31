@@ -1,6 +1,6 @@
 # Piano with Audio Sprites
 
-A piano thing for Frameworks and Architecture for the Web course at ITU, using the idea of Audio Sprites. Soureces of inspiration include Chris Heilmann's [HTML5 audio and audio sprites – this should be simple](https://hacks.mozilla.org/2012/04/html5-audio-and-audio-sprites-this-should-be-simple/) and Stoyan Stefanov's post [*Audio Sprites*](http://www.phpied.com/audio-sprites/) Mozilla's [MDN web docs](https://developer.mozilla.org/), and other places.
+A piano thing for Frameworks and Architecture for the Web course at ITU, using the idea of Audio Sprites. Sources of inspiration include Chris Heilmann's [HTML5 audio and audio sprites – this should be simple](https://hacks.mozilla.org/2012/04/html5-audio-and-audio-sprites-this-should-be-simple/) and Stoyan Stefanov's post [*Audio Sprites*](http://www.phpied.com/audio-sprites/) Mozilla's [MDN web docs](https://developer.mozilla.org/), and other places.
 
 The piano samples are from University of Iowa's [Electronic Music Studios](http://theremin.music.uiowa.edu/MISpiano.html), and were trimmed and transcoded to MP3 with [ffmpeg](https://www.ffmpeg.org). Thank you.
 
