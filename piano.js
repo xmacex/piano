@@ -14,8 +14,8 @@ function Piano(soundData) {
     this.audioSprites = {};
 
     // Play a note
-    this.playNote = function(dynamic, note) {
-	console.log("Playing note", dynamic, note);
+    this.playNote = function(note, dynamic = 'mf') {
+	console.log("Playing note", note, dynamic);
 	var audio = this.audioSprites[dynamic];
 	// Using the HTML element (w. dataset) to transfer data :-P
 	// This is inconsistent, since also the Piano object exists
@@ -32,7 +32,7 @@ function Piano(soundData) {
 	    audio.play();
 	    audio.addEventListener('timeupdate', this.decayNote);
 	} catch (e) {
-	    console.error(e, "Failed to play", dynamic, note);
+	    console.error(e, "Failed to play", note, dynamic);
 	    if (!(dynamic in this.playtime)) {
 		console.error(dynamic, 'not in', this.playtime);
 	    } else if (!(note in this.playtime[dynamic])) {
@@ -50,13 +50,13 @@ function Piano(soundData) {
     this.decayNote = function() {
 	// in this context, "this" is any of the three audio sprites
 	var audio = this;
-	console.log(audio.currentTime, audio.dataset.dynamic, "🎶",
-		    audio.dataset.note, "⏱ ",
+	console.log(audio.currentTime, audio.dataset.note, "🎶",
+		    audio.dataset.dynamic, "⏱ ",
 		    audio.dataset.end);
 	if(audio.currentTime > audio.dataset.end - 1) {
-	    console.log(audio.currentTime, audio.dataset.dynamic, "🔇",
-			audio.dataset.note, "because", audio.currentTime, ">",
-			audio.dataset.end - 1);
+	    console.log(audio.currentTime, audio.dataset.note,
+			audio.dataset.dynamic, "🔇", "because",
+			audio.currentTime, ">", audio.dataset.end - 1);
 	    audio.pause();
 	    removeEventListener('timeupdate', this.decayNote);
 	};
@@ -71,7 +71,7 @@ function Piano(soundData) {
 	keyElem.id = key;
 	keyElem.innerText = '🎹' + key;
 	keyElem.addEventListener('mousedown', function() {
-	    that.playNote(that.dynamic, this.id);
+	    that.playNote(this.id, that.dynamic);
 	});
 
 	parentElem.append(keyElem);
