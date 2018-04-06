@@ -19,9 +19,9 @@ function Piano(soundData) {
 	var audio = this.audioSprites[dynamic];
 	// Using the HTML element (w. dataset) to transfer data :-P
 	// This is inconsistent, since also the Piano object exists
-	// and holds this data. But not invoking, but passing the
-	// event listener with arguments would need some syntactic
-	// trickery. Conceptually, using the event would also makes
+	// and holds this data. Passing instead the event listener
+	// with arguments would need some syntactic
+	// trickery. Conceptually, using the event would also make
 	// sense for the decay.
 	try {
 	    audio.dataset.note = note;

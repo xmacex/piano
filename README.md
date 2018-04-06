@@ -23,10 +23,11 @@ The constructor accepts one parameter, which is an URL to a JSON structure, whic
 
 The `init()` accepts one parameter too, namely a CSS selector into which a rudimentary HTML UI will be built for testing purposes.
 
-Then play the piano by giving a dynamic and a note. Note that these must match exactly the playtime structure.
+Then play the piano by giving a note, and optionally a dynamic. Note that these must match exactly the playtime structure.
 
 ```javascript
-p.playNote('mf', 'D4');
+p.playNote('C4');
+p.playNote('D4', 'pp');
 ```
 
 ## Audio sample preparation
@@ -187,3 +188,13 @@ ffmpeg -f concat -safe 0 -i pp.files -c copy pp.mp3
 And later on, the three files were moved into the `ff`, `mf` and `pp` files, and the individual samples deleted.
 
 Sorted.
+
+## Limitations
+
+### Polyphony
+
+The implementation, as it is, is limited in polyphony – only one note can play from any of the dynamics at a time, though the dynamics can play in parellel. The Audio Sprites are implemented for all the ~88 notes across 3 dynamics, instead of 3 dynamics across the ~88 keys. This doesn't match how a physical piano works, of course.
+
+### Audio Sprite does not work solve pre-buffering
+
+The idea was to limit the number of HTTP requests and media resources down from one per sample ie. 3 * ~88 = ~264. The current Audio Sprite implementation has 3 resources to download, the one which would map to physical piano would have ~88. The HTTP >= 1.1 protocol uses the `Range` request header to ask the server to transfer a particular segment of it, and the response contains `Content-Range` header. So the idea of Audio Sprite does not really work around lag, as was hoped.
